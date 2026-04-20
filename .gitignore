@@ -22,5 +22,3 @@ dev/
 # Results file
 results.tsv
 
-# scratch
- local_temp/
