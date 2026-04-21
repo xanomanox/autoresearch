@@ -173,7 +173,12 @@ discard.
 
 ## Handoff format
 
-After saving `train.py`, return only one final JSON object.
+While working, follow your runtime's normal tool-use and progress-message
+requirements. You may inspect files and edit `train.py` as needed. The JSON
+restriction applies to the final controller handoff, not to intermediate
+runtime-required progress messages.
+
+After saving `train.py`, make your final response one JSON object.
 
 Use this when the controller should run the experiment:
 
@@ -182,7 +187,12 @@ Use this when the controller should run the experiment:
   "status": "ready",
   "description": "short experiment description",
   "hypothesis_or_rationale": "why this change may improve val_bpb",
-  "request_run": true
+  "request_run": true,
+  "give_up_reason": null,
+  "repair_summary": null,
+  "failure_analysis": null,
+  "changed_approach": null,
+  "confidence": null
 }
 ```
 
@@ -194,6 +204,7 @@ In repair mode, you may include optional repair-analysis fields:
   "description": "repair attention mask broadcast shape",
   "hypothesis_or_rationale": "The crash was caused by a mask shape mismatch after changing head layout. This repair preserves the experiment idea while restoring broadcast-compatible dimensions.",
   "request_run": true,
+  "give_up_reason": null,
   "repair_summary": "Adjusted the mask reshape in train.py.",
   "failure_analysis": "RuntimeError indicated incompatible attention mask dimensions.",
   "changed_approach": false,
@@ -209,7 +220,11 @@ Use this when no safe `train.py` edit is available:
   "description": "no safe edit found",
   "hypothesis_or_rationale": "brief reasoning summary",
   "request_run": false,
-  "give_up_reason": "specific reason"
+  "give_up_reason": "specific reason",
+  "repair_summary": null,
+  "failure_analysis": null,
+  "changed_approach": null,
+  "confidence": null
 }
 ```
 
@@ -222,14 +237,15 @@ Repair give-up responses may also include optional analysis:
   "hypothesis_or_rationale": "The crash appears fundamental to memory growth under the fixed budget.",
   "request_run": false,
   "give_up_reason": "Repair would require changing prepare.py evaluation assumptions or adding dependencies.",
+  "repair_summary": null,
   "failure_analysis": "The failure is not an implementation typo; the approach exceeds memory before evaluation.",
   "changed_approach": false,
   "confidence": "high"
 }
 ```
 
-The JSON must be valid and must be the final answer. Do not include extra
-prose after it.
+The final handoff JSON must be valid and must be the final answer. Do not
+include extra prose after the final JSON object.
 
 ## Autonomy
 
